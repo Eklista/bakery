@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../../utils/cn';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent' | 'gradient';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
   fullWidth?: boolean;
@@ -23,9 +23,10 @@ export const Button: React.FC<ButtonProps> = ({
         {
           'bg-primary text-white hover:bg-primary-dark focus-visible:ring-primary shadow-md hover:shadow-lg': variant === 'primary',
           'bg-secondary text-white hover:bg-secondary-dark focus-visible:ring-secondary shadow-md hover:shadow-lg': variant === 'secondary',
-          'bg-accent text-text hover:bg-accent-dark focus-visible:ring-accent shadow-md hover:shadow-lg': variant === 'accent',
+          'bg-accent text-white hover:bg-accent-dark focus-visible:ring-accent shadow-md hover:shadow-lg': variant === 'accent',
           'border border-border text-text hover:bg-surface focus-visible:ring-primary shadow-sm hover:shadow-md': variant === 'outline',
           'text-primary hover:bg-primary/10 focus-visible:ring-primary': variant === 'ghost',
+          'gradient-primary text-white hover:shadow-lg focus-visible:ring-primary shadow-md': variant === 'gradient',
         },
         {
           'h-8 px-3 text-sm': size === 'sm',
