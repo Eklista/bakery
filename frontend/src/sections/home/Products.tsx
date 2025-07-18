@@ -1,148 +1,249 @@
 // src/sections/home/Products.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { ShoppingBag, Star } from 'lucide-react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
+import { directusService } from '../../services/directusService';
+import type { DirectusProduct } from '../../services/directusService';
 import { groqTranslator } from '../../services/groqTranslator';
-import { formatPriceByLanguage } from '../../utils/currency';
+import { ProductCard } from '../../components/products/ProductCard';
+import type { ProductCardData } from '../../components/products/ProductCard';
 
-// Productos base en español con precios en USD (se convertirán a MXN)
-const productsFromCMS = [
-  {
-    id: '1',
-    name: 'Cupcake de Chocolate',
-    description: 'Delicioso cupcake con chocolate belga y crema de mantequilla suave',
-    price: 3.50, // USD
-    image: '/cookies.webp',
-    featured: true
-  },
-  {
-    id: '2',
-    name: 'Torta de Tres Leches',
-    description: 'Tradicional torta mexicana bañada con tres tipos de leche y canela',
-    price: 25.00, // USD
-    image: '/cookies.webp',
-    featured: true
-  },
-  {
-    id: '3',
-    name: 'Galletas de Avena',
-    description: 'Galletas caseras crujientes con avena, pasas doradas y vainilla',
-    price: 2.00, // USD
-    image: '/cookies.webp',
-    featured: true
-  },
-  {
-    id: '4',
-    name: 'Cheesecake de Fresa',
-    description: 'Cremoso cheesecake estilo New York con fresas frescas de temporada',
-    price: 8.50, // USD
-    image: '/cookies.webp',
-    featured: true
-  },
-  {
-    id: '5',
-    name: 'Croissant de Almendra',
-    description: 'Croissant francés hojaldrado relleno de crema de almendra y almendras tostadas',
-    price: 4.25, // USD
-    image: '/cookies.webp',
-    featured: true
-  }
-];
+const LoadingSkeleton = memo(() => (
+  <section className="py-16 bg-neutral-50">
+    <div className="max-w-[1600px] mx-auto px-8 lg:px-16">
+      <div className="text-center mb-16">
+        <div className="h-4 bg-gray-200 rounded w-48 mx-auto mb-4 animate-pulse"></div>
+        <div className="h-8 bg-gray-200 rounded w-72 mx-auto mb-6 animate-pulse"></div>
+        <div className="h-4 bg-gray-200 rounded w-96 mx-auto animate-pulse"></div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="bg-white rounded-3xl overflow-hidden">
+            <div className="h-64 bg-gray-200 animate-pulse"></div>
+            <div className="p-6">
+              <div className="h-6 bg-gray-200 rounded mb-2 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded mb-4 animate-pulse"></div>
+              <div className="flex justify-between">
+                <div className="h-10 bg-gray-200 rounded w-24 animate-pulse"></div>
+                <div className="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+));
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  featured: boolean;
-}
+const ErrorState = memo(({ error, onRetry, language }: { 
+  error: string; 
+  onRetry: () => void;
+  language: string;
+}) => (
+  <section className="py-16 bg-neutral-50">
+    <div className="max-w-[1600px] mx-auto px-8 lg:px-16">
+      <div className="text-center">
+        <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-zinc-900 mb-2">
+          {language === 'es' ? 'Error al cargar productos' : 'Error loading products'}
+        </h3>
+        <p className="text-neutral-600 mb-6 max-w-md mx-auto">{error}</p>
+        <motion.button
+          onClick={onRetry}
+          className="bg-amber-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-amber-600 transition-colors flex items-center gap-2 mx-auto"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <RefreshCw size={16} />
+          {language === 'es' ? 'Reintentar' : 'Retry'}
+        </motion.button>
+      </div>
+    </div>
+  </section>
+));
 
-export const Products: React.FC = () => {
+export const Products: React.FC = memo(() => {
   const { i18n } = useTranslation();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [, setTranslating] = useState(false);
-  const [, setError] = useState<string | null>(null);
+  const [translating, setTranslating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const translateProducts = async () => {
+  const headerTexts = useMemo(() => ({
+    es: {
+      subtitle: 'PRODUCTOS DESTACADOS',
+      title: 'Nuestros Favoritos',
+      description: 'Los productos más populares de nuestra panadería, hechos con amor y los mejores ingredientes',
+      viewAll: 'Ver Todos los Productos'
+    },
+    en: {
+      subtitle: 'FEATURED PRODUCTS',
+      title: 'Our Favorites',
+      description: 'The most popular products from our bakery, made with love and the finest ingredients',
+      viewAll: 'View All Products'
+    }
+  }), []);
+
+  const localizeProducts = useCallback(async (rawProducts: DirectusProduct[]) => {
     const currentLang = i18n.language;
     
-    console.log('🌐 Language:', currentLang);
+    console.log(`🌐 Localizing ${rawProducts.length} products for language:`, currentLang);
     
     if (currentLang === 'es') {
-      // Español: usar contenido original del CMS
-      setProducts(productsFromCMS);
-      setLoading(false);
+      console.log('✅ Language is Spanish, using original content from Directus');
+      const localizedProducts: ProductCardData[] = rawProducts.map(product => ({
+        id: product.id,
+        title: product.title,
+        description: product.description || 'Delicioso producto de nuestra panadería',
+        price: directusService.formatPrice(product.price),
+        image: directusService.getImageUrl(product.image),
+        slug: product.slug,
+        stock: product.stock,
+        category: product.category,
+        featured: true
+      }));
+      setProducts(localizedProducts);
       return;
     }
 
     if (currentLang === 'en') {
-      // Inglés: traducir con GROQ
       setTranslating(true);
-      console.log('🔄 Translating to English...');
+      console.log('🤖 Translating products to English with GROQ...');
       
       try {
-        const translatedProducts = await Promise.all(
-          productsFromCMS.map(async (product) => {
-            const [translatedName, translatedDescription] = await Promise.all([
-              groqTranslator.translate(product.name),
-              groqTranslator.translate(product.description)
+        const localizedProducts = await Promise.all(
+          rawProducts.map(async (product) => {
+            console.log('🔄 Translating product:', product.title);
+            
+            const description = product.description || 'Delicioso producto de nuestra panadería';
+            
+            const [translatedTitle, translatedDescription] = await Promise.all([
+              groqTranslator.translate(product.title, 'es', 'en'),
+              groqTranslator.translate(description, 'es', 'en')
             ]);
 
             return {
-              ...product,
-              name: translatedName,
-              description: translatedDescription
+              id: product.id,
+              title: translatedTitle,
+              description: translatedDescription,
+              price: directusService.formatPrice(product.price),
+              image: directusService.getImageUrl(product.image),
+              slug: product.slug,
+              stock: product.stock,
+              category: product.category,
+              featured: true
             };
           })
         );
         
-        setProducts(translatedProducts);
+        console.log('✅ All products translated successfully with GROQ');
+        setProducts(localizedProducts);
         setError(null);
-        console.log('✅ Translation complete');
-        
       } catch (err) {
-        console.error('❌ Translation failed:', err);
-        setError('Translation failed');
-        setProducts(productsFromCMS); // Fallback
+        console.error('❌ GROQ translation failed:', err);
+        setError('Translation failed, showing original content');
+        
+        const fallbackProducts: ProductCardData[] = rawProducts.map(product => ({
+          id: product.id,
+          title: product.title,
+          description: product.description || 'Delicioso producto de nuestra panadería',
+          price: directusService.formatPrice(product.price),
+          image: directusService.getImageUrl(product.image),
+          slug: product.slug,
+          stock: product.stock,
+          category: product.category,
+          featured: true
+        }));
+        setProducts(fallbackProducts);
       } finally {
         setTranslating(false);
       }
     }
-    
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    translateProducts();
   }, [i18n.language]);
 
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log('📦 Fetching products from Directus API...');
+      
+      let rawProducts: DirectusProduct[] = [];
+      
+      try {
+        rawProducts = await directusService.fetchFeaturedProducts();
+        console.log('✅ Featured products fetched:', rawProducts.length);
+        
+        if (rawProducts.length === 0) {
+          console.log('⚠️ No featured products found, fetching all products...');
+          const allProducts = await directusService.fetchAllProducts();
+          rawProducts = allProducts.slice(0, 6);
+        }
+      } catch (featuredError) {
+        console.warn('⚠️ Featured products failed, trying all products:', featuredError);
+        const allProducts = await directusService.fetchAllProducts();
+        rawProducts = allProducts.slice(0, 6);
+      }
+
+      if (rawProducts.length === 0) {
+        throw new Error('No products found in Directus');
+      }
+
+      await localizeProducts(rawProducts);
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      setError(errorMessage);
+      console.error('❌ Error in fetchProducts:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [localizeProducts]);
+
+  useEffect(() => {
+    console.log('🚀 Products component mounted, language:', i18n.language);
+    fetchProducts();
+  }, [fetchProducts, i18n.language]);
+
+  const handleAddToCart = useCallback((product: ProductCardData) => {
+    console.log('Adding to cart:', product);
+    // Implementar lógica del carrito
+  }, []);
+
+  const handleViewMore = useCallback((product: ProductCardData) => {
+    console.log('View product details:', product);
+    // Navegar a página de detalle del producto
+  }, []);
+
+  const handleViewAll = useCallback(() => {
+    console.log('Navigate to all products page');
+  }, []);
+
+  const currentTexts = useMemo(() => 
+    headerTexts[i18n.language as 'es' | 'en'] || headerTexts.es, 
+    [i18n.language, headerTexts]
+  );
+
   if (loading) {
-    return (
-      <section className="py-16 bg-neutral-50">
-        <div className="max-w-[1600px] mx-auto px-8 lg:px-16">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto"></div>
-            <p className="mt-4 text-neutral-600">Loading products...</p>
-          </div>
-        </div>
-      </section>
-    );
+    return <LoadingSkeleton />;
+  }
+
+  if (error) {
+    return <ErrorState error={error} onRetry={fetchProducts} language={i18n.language} />;
   }
 
   return (
     <section className="py-16 bg-neutral-50">
       <div className="max-w-[1600px] mx-auto px-8 lg:px-16">
         
-        {/* Header */}
         <motion.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "100px" }}
         >
           <motion.span 
             className="text-sm font-bold text-amber-600 tracking-[0.3em] uppercase mb-4 block"
@@ -151,109 +252,63 @@ export const Products: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            {i18n.language === 'es' ? 'PRODUCTOS DESTACADOS' : 'FEATURED PRODUCTS'}
+            {translating ? 'TRANSLATING...' : currentTexts.subtitle}
           </motion.span>
           <h2 className="text-4xl lg:text-6xl font-black text-zinc-900 mb-6">
-            {i18n.language === 'es' ? 'Nuestros Favoritos' : 'Our Favorites'}
+            {currentTexts.title}
           </h2>
           <p className="text-lg text-neutral-600 max-w-3xl mx-auto leading-relaxed">
-            {i18n.language === 'es' 
-              ? 'Los productos más populares de nuestra panadería, hechos con amor y los mejores ingredientes'
-              : 'The most popular products from our bakery, made with love and the finest ingredients'
-            }
+            {currentTexts.description}
           </p>
+          {translating && (
+            <p className="text-amber-600 text-sm mt-2 flex items-center justify-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-500"></div>
+              {i18n.language === 'es' ? 'Traduciendo productos...' : 'Translating products...'}
+            </p>
+          )}
         </motion.div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.filter(p => p.featured).map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-            >
-              {/* Image */}
-              <div className="relative h-64 bg-gradient-to-br from-amber-100 to-orange-100 overflow-hidden">
-                <motion.img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        {products.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-neutral-600 text-lg">
+              {i18n.language === 'es' ? 'No hay productos disponibles' : 'No products available'}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {products.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  index={index}
+                  language={i18n.language}
+                  variant="featured"
+                  onAddToCart={handleAddToCart}
+                  onViewMore={handleViewMore}
                 />
-                
-                <motion.div 
-                  className="absolute top-4 left-4 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                >
-                  <Star size={12} className="fill-current" />
-                  <span>{i18n.language === 'es' ? 'Destacado' : 'Featured'}</span>
-                </motion.div>
+              ))}
+            </div>
 
-                <motion.div 
-                  className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-2"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                >
-                  <span className="text-lg font-black text-zinc-900">
-                    {formatPriceByLanguage(product.price, i18n.language)}
-                  </span>
-                </motion.div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-zinc-900 mb-2 group-hover:text-amber-600 transition-colors">
-                  {product.name}
-                </h3>
-                <p className="text-neutral-600 text-sm mb-4 line-clamp-2">
-                  {product.description}
-                </p>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between">
-                  <motion.button 
-                    className="flex items-center space-x-2 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-amber-600 transition-all duration-300"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <ShoppingBag size={16} />
-                    <span>{i18n.language === 'es' ? 'Agregar' : 'Add to Cart'}</span>
-                  </motion.button>
-
-                  <motion.button 
-                    className="text-amber-600 font-semibold text-sm hover:text-amber-700 transition-colors"
-                    whileHover={{ x: 5 }}
-                  >
-                    {i18n.language === 'es' ? 'Ver más' : 'View more'}
-                  </motion.button>
-                </div>
-              </div>
+            <motion.div 
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true, margin: "50px" }}
+            >
+              <motion.button 
+                onClick={handleViewAll}
+                className="bg-amber-500 text-white font-bold px-8 py-4 rounded-full hover:bg-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {currentTexts.viewAll}
+              </motion.button>
             </motion.div>
-          ))}
-        </div>
-
-        {/* View All */}
-        <motion.div 
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <motion.button 
-            className="bg-amber-500 text-white font-bold px-8 py-4 rounded-full hover:bg-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {i18n.language === 'es' ? 'Ver Todos los Productos' : 'View All Products'}
-          </motion.button>
-        </motion.div>
+          </>
+        )}
       </div>
     </section>
   );
-};
+});

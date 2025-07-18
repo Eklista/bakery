@@ -55,7 +55,27 @@ const resources = {
       'common.addToCart': 'Agregar al Carrito',
       'common.buyNow': 'Comprar Ahora',
       'common.close': 'Cerrar',
-      'common.loading': 'Cargando...'
+      'common.loading': 'Cargando...',
+
+      'cookies.banner.title': '🍪 Utilizamos cookies',
+      'cookies.banner.description': 'Utilizamos cookies para mejorar tu experiencia, analizar el tráfico del sitio y personalizar el contenido. Puedes elegir qué tipos de cookies permitir.',
+      'cookies.customize': 'Personalizar',
+      'cookies.necessary': 'Solo Necesarias',
+      'cookies.acceptAll': 'Aceptar Todo',
+      'cookies.settings.title': 'Configuración de Cookies',
+      'cookies.settings.description': 'Gestiona tus preferencias de cookies. Puedes habilitar o deshabilitar diferentes tipos de cookies según tus preferencias.',
+      'cookies.necessary.title': 'Cookies Necesarias',
+      'cookies.necessary.desc': 'Esenciales para el funcionamiento básico del sitio web',
+      'cookies.preferences.title': 'Cookies de Preferencias',
+      'cookies.preferences.desc': 'Recuerdan tus preferencias y configuraciones',
+      'cookies.analytics.title': 'Cookies de Análisis',
+      'cookies.analytics.desc': 'Nos ayudan a entender cómo usas nuestro sitio web',
+      'cookies.marketing.title': 'Cookies de Marketing',
+      'cookies.marketing.desc': 'Utilizadas para mostrar anuncios relevantes',
+      'cookies.required': 'Requerido',
+      'cookies.examples': 'Ejemplos:',
+      'cookies.rejectAll': 'Rechazar Todo',
+      'cookies.saveSettings': 'Guardar Configuración',
     }
   },
   
@@ -111,7 +131,27 @@ const resources = {
       'common.addToCart': 'Add to Cart',
       'common.buyNow': 'Buy Now',
       'common.close': 'Close',
-      'common.loading': 'Loading...'
+      'common.loading': 'Loading...',
+
+      'cookies.banner.title': '🍪 We use cookies',
+      'cookies.banner.description': 'We use cookies to improve your experience, analyze site traffic and personalize content. You can choose which types of cookies to allow.',
+      'cookies.customize': 'Customize',
+      'cookies.necessary': 'Necessary Only',
+      'cookies.acceptAll': 'Accept All',
+      'cookies.settings.title': 'Cookie Settings',
+      'cookies.settings.description': 'Manage your cookie preferences. You can enable or disable different types of cookies according to your preferences.',
+      'cookies.necessary.title': 'Necessary Cookies',
+      'cookies.necessary.desc': 'Essential for basic website functionality',
+      'cookies.preferences.title': 'Preference Cookies',
+      'cookies.preferences.desc': 'Remember your preferences and settings',
+      'cookies.analytics.title': 'Analytics Cookies',
+      'cookies.analytics.desc': 'Help us understand how you use our website',
+      'cookies.marketing.title': 'Marketing Cookies',
+      'cookies.marketing.desc': 'Used to show relevant advertisements',
+      'cookies.required': 'Required',
+      'cookies.examples': 'Examples:',
+      'cookies.rejectAll': 'Reject All',
+      'cookies.saveSettings': 'Save Settings',      
     }
   }
 };
