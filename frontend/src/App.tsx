@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Layout } from './components/layout/Layout';
 import { Home } from './views/Home';
 import { LanguageModal } from './components/ui/LanguageModal';
+import { SmoothScroll } from './components/SmoothScroll'; // 👈 Asegúrate que exista este archivo
 
 function App() {
   const { i18n } = useTranslation();
@@ -25,7 +26,7 @@ function App() {
 
   const handleCloseModal = () => {
     setShowLanguageModal(false);
-    
+
     const savedLanguage = localStorage.getItem('bakehaus-language');
     if (!savedLanguage) {
       i18n.changeLanguage('en');
@@ -35,11 +36,13 @@ function App() {
 
   return (
     <>
+      <SmoothScroll /> {/* 👈 Scroll suave global */}
+      
       <LanguageModal
         isOpen={showLanguageModal}
         onClose={handleCloseModal}
       />
-      
+
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />

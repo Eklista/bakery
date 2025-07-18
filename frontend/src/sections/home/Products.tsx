@@ -13,7 +13,7 @@ const productsFromCMS = [
     name: 'Cupcake de Chocolate',
     description: 'Delicioso cupcake con chocolate belga y crema de mantequilla suave',
     price: 3.50, // USD
-    image: '/cookies.png',
+    image: '/cookies.webp',
     featured: true
   },
   {
@@ -21,7 +21,7 @@ const productsFromCMS = [
     name: 'Torta de Tres Leches',
     description: 'Tradicional torta mexicana bañada con tres tipos de leche y canela',
     price: 25.00, // USD
-    image: '/cookies.png',
+    image: '/cookies.webp',
     featured: true
   },
   {
@@ -29,7 +29,7 @@ const productsFromCMS = [
     name: 'Galletas de Avena',
     description: 'Galletas caseras crujientes con avena, pasas doradas y vainilla',
     price: 2.00, // USD
-    image: '/cookies.png',
+    image: '/cookies.webp',
     featured: true
   },
   {
@@ -37,7 +37,7 @@ const productsFromCMS = [
     name: 'Cheesecake de Fresa',
     description: 'Cremoso cheesecake estilo New York con fresas frescas de temporada',
     price: 8.50, // USD
-    image: '/cookies.png',
+    image: '/cookies.webp',
     featured: true
   },
   {
@@ -45,7 +45,7 @@ const productsFromCMS = [
     name: 'Croissant de Almendra',
     description: 'Croissant francés hojaldrado relleno de crema de almendra y almendras tostadas',
     price: 4.25, // USD
-    image: '/cookies.png',
+    image: '/cookies.webp',
     featured: true
   }
 ];

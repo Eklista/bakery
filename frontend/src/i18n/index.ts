@@ -73,7 +73,7 @@ const resources = {
       // Hero
       'hero.subtitle': 'ARTISANAL PRODUCTS',
       'hero.badge': 'SINCE 1995',
-      'hero.location': 'MEXICO CITY • PREMIUM BAKERY • SINCE 1965',
+      'hero.location': 'NEW YORK CITY • PREMIUM BAKERY • SINCE 1965',
       'hero.followUs': 'FOLLOW US',
       'hero.access': 'ACCESS',
       
