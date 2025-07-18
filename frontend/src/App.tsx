@@ -7,6 +7,7 @@ function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/nosotros" element={<div>Nosotros - Próximamente</div>} />
         <Route path="/productos" element={<div>Productos - Próximamente</div>} />
         <Route path="/eventos" element={<div>Eventos - Próximamente</div>} />
         <Route path="/contacto" element={<div>Contacto - Próximamente</div>} />

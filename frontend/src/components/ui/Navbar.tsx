@@ -9,6 +9,7 @@ export const Navbar: React.FC = () => {
 
   const navItems = [
     { name: 'Inicio', href: '/' },
+    { name: 'Nosotros', href: '/nosotros' },
     { name: 'Productos', href: '/productos' },
     { name: 'Eventos', href: '/eventos' },
     { name: 'Contacto', href: '/contacto' }
