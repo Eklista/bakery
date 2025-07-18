@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// src/App.tsx
+import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from './components/layout/Layout';

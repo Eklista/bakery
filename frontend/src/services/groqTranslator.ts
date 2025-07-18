@@ -118,6 +118,7 @@ class GroqTranslatorService {
     }
   }
 
+  // Verificar configuración
   checkConfig() {
     console.log('⚙️ GROQ Configuration:');
     console.log('API Key:', this.apiKey ? '✅ Configured' : '❌ Missing');
@@ -141,6 +142,7 @@ class GroqTranslatorService {
 export const groqTranslator = new GroqTranslatorService();
 groqTranslator.loadCache();
 
+// Para testing en consola
 (window as any).groq = {
   translate: (text: string) => groqTranslator.translate(text),
   test: () => groqTranslator.test(),

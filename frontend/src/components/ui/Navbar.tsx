@@ -1,18 +1,22 @@
+// src/components/ui/Navbar.tsx - Actualizado con i18n
 import React, { useState } from 'react';
 import { Menu, X, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const Navbar: React.FC = () => {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount] = useState(0);
-  const [activeItem, setActiveItem] = useState('Inicio');
+  const [activeItem, setActiveItem] = useState('home');
 
   const navItems = [
-    { name: 'Inicio', href: '/' },
-    { name: 'Nosotros', href: '/nosotros' },
-    { name: 'Productos', href: '/productos' },
-    { name: 'Eventos', href: '/eventos' },
-    { name: 'Contacto', href: '/contacto' }
+    { name: t('navbar.home'), href: '/', key: 'home' },
+    { name: t('navbar.about'), href: '/nosotros', key: 'about' },
+    { name: t('navbar.products'), href: '/productos', key: 'products' },
+    { name: t('navbar.events'), href: '/eventos', key: 'events' },
+    { name: t('navbar.contact'), href: '/contacto', key: 'contact' }
   ];
 
   return (
@@ -39,14 +43,14 @@ export const Navbar: React.FC = () => {
           <div className="hidden lg:flex items-center space-x-1">
             {navItems.map((item, index) => (
               <motion.a
-                key={item.name}
+                key={item.key}
                 href={item.href}
-                onClick={() => setActiveItem(item.name)}
+                onClick={() => setActiveItem(item.key)}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
                 className={`font-semibold text-sm transition-all duration-300 py-3 px-6 rounded-full relative group ${
-                  activeItem === item.name 
+                  activeItem === item.key 
                     ? 'text-white bg-neutral-900' 
                     : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50'
                 }`}
@@ -62,13 +66,15 @@ export const Navbar: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
+            <LanguageSwitcher />
+            
             <motion.button 
               className="flex items-center space-x-2 text-neutral-700 hover:text-neutral-900 font-semibold text-sm transition-all duration-300 py-3 px-4 rounded-full hover:bg-neutral-50 relative"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <ShoppingBag size={18} />
-              <span>Carrito</span>
+              <span>{t('navbar.cart')}</span>
               <AnimatePresence>
                 {cartCount > 0 && (
                   <motion.span
@@ -84,15 +90,16 @@ export const Navbar: React.FC = () => {
             </motion.button>
             
             <motion.button 
-              className="bg-zinc-900 text-white font-bold px-6 py-3 rounded-full hover:bg-zinc-100 hover:text-black hover:border-black hover:border-[2px] transition-all duration-300 shadow-lg "
+              className="bg-zinc-900 text-white font-bold px-6 py-3 rounded-full hover:bg-zinc-100 hover:text-black hover:border-black hover:border-[2px] transition-all duration-300 shadow-lg"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
             >
-              Ordenar
+              {t('navbar.order')}
             </motion.button>
           </motion.div>
 
-          <div className="lg:hidden">
+          <div className="lg:hidden flex items-center space-x-3">
+            <LanguageSwitcher />
             <motion.button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-neutral-700 hover:text-neutral-900 p-3 rounded-full hover:bg-neutral-50 transition-all duration-300"
@@ -138,15 +145,15 @@ export const Navbar: React.FC = () => {
             <div className="px-8 py-6 space-y-2">
               {navItems.map((item, index) => (
                 <motion.a
-                  key={item.name}
+                  key={item.key}
                   href={item.href}
                   className={`block py-4 px-6 rounded-2xl text-base font-semibold transition-all duration-300 ${
-                    activeItem === item.name 
+                    activeItem === item.key 
                       ? 'text-white bg-neutral-900' 
                       : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50'
                   }`}
                   onClick={() => {
-                    setActiveItem(item.name);
+                    setActiveItem(item.key);
                     setIsMenuOpen(false);
                   }}
                   initial={{ x: -20, opacity: 0 }}
@@ -169,7 +176,7 @@ export const Navbar: React.FC = () => {
                   whileTap={{ scale: 0.98 }}
                 >
                   <ShoppingBag size={18} />
-                  <span>Ver Carrito</span>
+                  <span>{t('navbar.cart')}</span>
                   <AnimatePresence>
                     {cartCount > 0 && (
                       <motion.span
@@ -189,7 +196,7 @@ export const Navbar: React.FC = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  Ordenar Ahora
+                  {t('navbar.order')}
                 </motion.button>
               </motion.div>
             </div>

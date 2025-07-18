@@ -1,3 +1,4 @@
+// src/components/ui/LanguageModal.tsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +11,7 @@ interface LanguageModalProps {
 
 export const LanguageModal: React.FC<LanguageModalProps> = ({ isOpen, onClose }) => {
   const { i18n } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState('en'); // Default inglés
   const [rememberChoice, setRememberChoice] = useState(true);
 
   const languages = [
@@ -55,6 +56,7 @@ export const LanguageModal: React.FC<LanguageModalProps> = ({ isOpen, onClose })
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl"
         >
+          {/* Header */}
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0 }}
@@ -72,6 +74,7 @@ export const LanguageModal: React.FC<LanguageModalProps> = ({ isOpen, onClose })
             </p>
           </div>
 
+          {/* Language Options */}
           <div className="space-y-3 mb-6">
             {languages.map((language) => (
               <motion.button
@@ -112,6 +115,7 @@ export const LanguageModal: React.FC<LanguageModalProps> = ({ isOpen, onClose })
             ))}
           </div>
 
+          {/* Remember Choice */}
           <div className="mb-6">
             <label className="flex items-center space-x-3 cursor-pointer">
               <input
@@ -126,6 +130,7 @@ export const LanguageModal: React.FC<LanguageModalProps> = ({ isOpen, onClose })
             </label>
           </div>
 
+          {/* Action Button */}
           <motion.button
             onClick={handleConfirm}
             className="w-full bg-zinc-900 text-white font-bold py-4 rounded-2xl hover:bg-amber-600 transition-all duration-300"
@@ -135,6 +140,7 @@ export const LanguageModal: React.FC<LanguageModalProps> = ({ isOpen, onClose })
             Continue / Continuar
           </motion.button>
 
+          {/* Brand */}
           <div className="text-center mt-6 pt-6 border-t border-neutral-100">
             <div className="text-lg font-black text-zinc-900">BAKEHAUS</div>
             <div className="text-xs text-neutral-500">Since 1965</div>

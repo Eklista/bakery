@@ -1,3 +1,4 @@
+// src/sections/home/Products.tsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -5,12 +6,13 @@ import { ShoppingBag, Star } from 'lucide-react';
 import { groqTranslator } from '../../services/groqTranslator';
 import { formatPriceByLanguage } from '../../utils/currency';
 
+// Productos base en español con precios en USD (se convertirán a MXN)
 const productsFromCMS = [
   {
     id: '1',
     name: 'Cupcake de Chocolate',
     description: 'Delicioso cupcake con chocolate belga y crema de mantequilla suave',
-    price: 3.50,
+    price: 3.50, // USD
     image: '/cookies.png',
     featured: true
   },
@@ -18,7 +20,7 @@ const productsFromCMS = [
     id: '2',
     name: 'Torta de Tres Leches',
     description: 'Tradicional torta mexicana bañada con tres tipos de leche y canela',
-    price: 25.00,
+    price: 25.00, // USD
     image: '/cookies.png',
     featured: true
   },
@@ -26,7 +28,7 @@ const productsFromCMS = [
     id: '3',
     name: 'Galletas de Avena',
     description: 'Galletas caseras crujientes con avena, pasas doradas y vainilla',
-    price: 2.00,
+    price: 2.00, // USD
     image: '/cookies.png',
     featured: true
   },
@@ -34,7 +36,7 @@ const productsFromCMS = [
     id: '4',
     name: 'Cheesecake de Fresa',
     description: 'Cremoso cheesecake estilo New York con fresas frescas de temporada',
-    price: 8.50,
+    price: 8.50, // USD
     image: '/cookies.png',
     featured: true
   },
@@ -42,7 +44,7 @@ const productsFromCMS = [
     id: '5',
     name: 'Croissant de Almendra',
     description: 'Croissant francés hojaldrado relleno de crema de almendra y almendras tostadas',
-    price: 4.25,
+    price: 4.25, // USD
     image: '/cookies.png',
     featured: true
   }
@@ -70,12 +72,14 @@ export const Products: React.FC = () => {
     console.log('🌐 Language:', currentLang);
     
     if (currentLang === 'es') {
+      // Español: usar contenido original del CMS
       setProducts(productsFromCMS);
       setLoading(false);
       return;
     }
 
     if (currentLang === 'en') {
+      // Inglés: traducir con GROQ
       setTranslating(true);
       console.log('🔄 Translating to English...');
       
@@ -102,7 +106,7 @@ export const Products: React.FC = () => {
       } catch (err) {
         console.error('❌ Translation failed:', err);
         setError('Translation failed');
-        setProducts(productsFromCMS);
+        setProducts(productsFromCMS); // Fallback
       } finally {
         setTranslating(false);
       }
@@ -132,6 +136,7 @@ export const Products: React.FC = () => {
     <section className="py-16 bg-neutral-50">
       <div className="max-w-[1600px] mx-auto px-8 lg:px-16">
         
+        {/* Header */}
         <motion.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -159,6 +164,7 @@ export const Products: React.FC = () => {
           </p>
         </motion.div>
 
+        {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.filter(p => p.featured).map((product, index) => (
             <motion.div
@@ -169,6 +175,7 @@ export const Products: React.FC = () => {
               viewport={{ once: true }}
               className="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
+              {/* Image */}
               <div className="relative h-64 bg-gradient-to-br from-amber-100 to-orange-100 overflow-hidden">
                 <motion.img
                   src={product.image}
@@ -198,6 +205,7 @@ export const Products: React.FC = () => {
                 </motion.div>
               </div>
 
+              {/* Content */}
               <div className="p-6">
                 <h3 className="text-xl font-bold text-zinc-900 mb-2 group-hover:text-amber-600 transition-colors">
                   {product.name}
@@ -206,6 +214,7 @@ export const Products: React.FC = () => {
                   {product.description}
                 </p>
 
+                {/* Actions */}
                 <div className="flex items-center justify-between">
                   <motion.button 
                     className="flex items-center space-x-2 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-amber-600 transition-all duration-300"
@@ -228,6 +237,7 @@ export const Products: React.FC = () => {
           ))}
         </div>
 
+        {/* View All */}
         <motion.div 
           className="text-center mt-12"
           initial={{ opacity: 0, y: 20 }}
