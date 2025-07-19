@@ -7,8 +7,12 @@ import { LanguageModal } from './components/ui/LanguageModal';
 import { CookieBanner } from './components/ui/CookieBanner';
 import { SmoothScroll } from './components/SmoothScroll';
 import { LazyLoader } from './components/LazyLoader';
+import { CartProvider } from './contexts/CartContext';
 
+// Lazy load de las páginas
 const Home = lazy(() => import('./views/Home').then(module => ({ default: module.Home })));
+const About = lazy(() => import('./views/About').then(module => ({ default: module.About })));
+const Products = lazy(() => import('./views/Products').then(module => ({ default: module.Products })));
 
 function App() {
   const { i18n } = useTranslation();
@@ -25,17 +29,14 @@ function App() {
       console.log('Saved language:', savedLanguage);
 
       if (savedLanguage) {
-        // Si hay idioma guardado, usarlo
         console.log('✅ Using saved language:', savedLanguage);
         i18n.changeLanguage(savedLanguage);
         setIsInitialized(true);
       } else if (!modalShown) {
-        // Si no hay idioma guardado y no se ha mostrado el modal
         console.log('🔵 Showing language modal for first time');
         setShowLanguageModal(true);
         setIsInitialized(true);
       } else {
-        // Fallback al inglés
         console.log('⚠️ Fallback to English');
         i18n.changeLanguage('en');
         localStorage.setItem('bakehaus-language', 'en');
@@ -60,7 +61,7 @@ function App() {
   }
 
   return (
-    <>
+    <CartProvider>
       <SmoothScroll />
       
       <LanguageModal
@@ -72,41 +73,45 @@ function App() {
 
       <Layout>
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               <LazyLoader>
                 <Home />
               </LazyLoader>
-            } 
+            }
           />
-          <Route 
-            path="/nosotros" 
+          <Route
+            path="/nosotros"
             element={
-              <div className="pt-20 p-8 text-center">About - Coming Soon</div>
-            } 
+              <LazyLoader>
+                <About />
+              </LazyLoader>
+            }
           />
-          <Route 
-            path="/productos" 
+          <Route
+            path="/productos"
             element={
-              <div className="pt-20 p-8 text-center">Products - Coming Soon</div>
-            } 
+              <LazyLoader>
+                <Products />
+              </LazyLoader>
+            }
           />
-          <Route 
-            path="/eventos" 
+          <Route
+            path="/eventos"
             element={
               <div className="pt-20 p-8 text-center">Events - Coming Soon</div>
-            } 
+            }
           />
-          <Route 
-            path="/contacto" 
+          <Route
+            path="/contacto"
             element={
               <div className="pt-20 p-8 text-center">Contact - Coming Soon</div>
-            } 
+            }
           />
         </Routes>
       </Layout>
-    </>
+    </CartProvider>
   );
 }
 

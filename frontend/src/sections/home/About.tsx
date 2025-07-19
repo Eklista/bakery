@@ -1,178 +1,132 @@
 // src/sections/home/About.tsx
-import React, { memo, useMemo, useCallback } from 'react';
+import React, { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, MapPin, Globe, Star, Coffee, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const StatCard = memo(({ 
-  icon: Icon, 
-  title, 
-  children,
-  delay = 0 
-}: { 
-  icon: React.ComponentType<any>;
-  title: string;
-  children: React.ReactNode;
-  delay?: number;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, x: -30 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.8, delay }}
-    viewport={{ once: true, margin: "100px" }}
-    className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8"
-  >
-    <div className="flex items-center justify-center space-x-3 mb-6">
-      <Icon className="w-8 h-8 text-amber-600" />
-      <h3 className="text-2xl font-black text-zinc-900">{title}</h3>
-    </div>
-    {children}
-  </motion.div>
-));
-
-const LocationTag = memo(({ location, index }: { location: string; index: number }) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.8 }}
-    whileInView={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.4, delay: index * 0.1 }}
-    viewport={{ once: true }}
-    className="flex items-center space-x-1 bg-white border border-amber-200 rounded-full px-3 py-1 text-xs font-semibold text-neutral-700"
-  >
-    <MapPin size={12} className="text-amber-600" />
-    <span>{location}</span>
-  </motion.div>
-));
-
-const SpecialtyCard = memo(({ 
-  specialty, 
-  index 
-}: { 
-  specialty: { icon: React.ComponentType<any>; title: string; color: string };
-  index: number;
-}) => {
-  const IconComponent = specialty.icon;
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
-      viewport={{ once: true }}
-      className="text-center group"
-    >
-      <motion.div 
-        className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-md group-hover:shadow-lg transition-all duration-300"
-        whileHover={{ scale: 1.1 }}
-      >
-        <IconComponent size={20} className={specialty.color} />
-      </motion.div>
-      <span className="text-sm font-bold text-zinc-900">{specialty.title}</span>
-    </motion.div>
-  );
-});
-
 export const About: React.FC = memo(() => {
-  const { t } = useTranslation();
-  
-  const locations = useMemo(() => [
-    'Los Ángeles', 'Chicago', 'Honolulu', 'México', 
-    'Seúl', 'Tokio', 'Moscú', 'Dubai', 'Doha'
-  ], []);
+  const { i18n } = useTranslation();
 
-  const specialties = useMemo(() => [
-    { icon: Coffee, title: t('about.cupcakes'), color: 'text-pink-500' },
-    { icon: Heart, title: t('about.cakes'), color: 'text-red-500' },
-    { icon: Star, title: t('about.cookies'), color: 'text-amber-500' }
-  ], [t]);
+  const headerTexts = useMemo(() => ({
+    es: {
+      subtitle: 'NUESTRA HISTORIA',
+      title: 'Desde 1965',
+      historyText1: 'En 1965, BAKEHAUS abrió su primer local en una calle tranquila de Nueva York. Desde sus inicios, hemos sido reconocidos por nuestra comida clásica americana, ambiente vintage y cálido, y atmósfera amigable.',
+      historyText2: 'En 2007, Steve y Tyra Abrams compraron BAKEHAUS y la expandieron desde Nueva York hasta el mundo entero. Hoy mantenemos la misma calidad artesanal y calidez familiar en cada una de nuestras ubicaciones.',
+      specialtiesText: 'Nos especializamos en eventos como bodas, eventos corporativos, cumpleaños y baby showers. Nuestros productos estrella son cupcakes, tortas y galletas artesanales.'
+    },
+    en: {
+      subtitle: 'OUR HISTORY',
+      title: 'Since 1965',
+      historyText1: 'In 1965, BAKEHAUS opened its first location on a quiet street in New York. Since our beginnings, we have been recognized for our classic American food, vintage and warm atmosphere, and friendly environment.',
+      historyText2: 'In 2007, Steve and Tyra Abrams bought BAKEHAUS and expanded it from New York to the entire world. Today we maintain the same artisanal quality and family warmth in each of our locations.',
+      specialtiesText: 'We specialize in events such as weddings, corporate events, birthdays and baby showers. Our signature products are artisanal cupcakes, cakes and cookies.'
+    }
+  }), [i18n.language]);
 
-  const handleRequestQuote = useCallback(() => {
-    console.log('Request quote clicked');
-  }, []);
+  const currentTexts = headerTexts[i18n.language as 'es' | 'en'] || headerTexts.es;
 
   return (
-    <section className="py-16 bg-white relative overflow-hidden">
+    <section className="py-16 bg-white">
       <div className="max-w-[1600px] mx-auto px-8 lg:px-16">
         
+        {/* Header */}
         <motion.div 
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true, margin: "100px" }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
         >
-          <motion.span 
-            className="text-sm font-bold text-amber-600 tracking-[0.3em] uppercase mb-4 block"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            {t('about.ourHistory')}
-          </motion.span>
-          <h2 className="text-4xl lg:text-6xl font-black text-zinc-900 mb-6">
-            {t('about.since')} <span className="text-amber-500">1965</span>
+          <span className="text-sm font-bold text-amber-600 tracking-[0.3em] uppercase mb-4 block">
+            {currentTexts.subtitle}
+          </span>
+          <h2 className="text-4xl lg:text-5xl font-black text-zinc-900 mb-6">
+            {currentTexts.title}
           </h2>
-          <p className="text-lg text-neutral-600 max-w-4xl mx-auto leading-relaxed">
-            {t('about.historyText')}
-          </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+        {/* Content Grid - Historia + Imagen */}
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           
-          <StatCard
-            icon={Globe}
-            title={t('about.globalPresence')}
-            delay={0}
+          {/* Historia */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="space-y-6"
           >
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              {locations.slice(0, 6).map((location, index) => (
-                <LocationTag 
-                  key={location} 
-                  location={location} 
-                  index={index}
-                />
-              ))}
-            </div>
-            <p className="text-center text-sm text-neutral-600">
-              {t('about.moreCities')}
-            </p>
-          </StatCard>
-
-          <StatCard
-            icon={Award}
-            title={t('about.specialties')}
-            delay={0.2}
-          >
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              {specialties.map((specialty, index) => (
-                <SpecialtyCard 
-                  key={specialty.title} 
-                  specialty={specialty} 
-                  index={index}
-                />
-              ))}
-            </div>
-            <p className="text-center text-sm text-neutral-600 mb-6">
-              {t('about.eventsText')}
+            <p className="text-lg text-neutral-600 leading-relaxed">
+              {currentTexts.historyText1}
             </p>
             
-            <motion.div
-              className="text-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <motion.button 
-                onClick={handleRequestQuote}
-                className="bg-zinc-900 text-white font-bold px-6 py-3 rounded-full hover:bg-amber-600 transition-all duration-300 shadow-lg text-sm"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {t('about.requestQuote')}
-              </motion.button>
-            </motion.div>
-          </StatCard>
+            <p className="text-lg text-neutral-600 leading-relaxed">
+              {currentTexts.historyText2}
+            </p>
+            
+            <div className="pt-6 border-t border-neutral-100">
+              <p className="text-neutral-700 leading-relaxed">
+                {currentTexts.specialtiesText}
+              </p>
+            </div>
+
+            {/* Stats simples */}
+            <div className="flex space-x-8 pt-6">
+              <div>
+                <div className="text-3xl font-black text-amber-600">1965</div>
+                <div className="text-sm text-neutral-500 font-medium">
+                  {i18n.language === 'es' ? 'Fundada' : 'Founded'}
+                </div>
+              </div>
+              <div>
+                <div className="text-3xl font-black text-amber-600">10+</div>
+                <div className="text-sm text-neutral-500 font-medium">
+                  {i18n.language === 'es' ? 'Ciudades' : 'Cities'}
+                </div>
+              </div>
+              <div>
+                <div className="text-3xl font-black text-amber-600">50+</div>
+                <div className="text-sm text-neutral-500 font-medium">
+                  {i18n.language === 'es' ? 'Años' : 'Years'}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Imagen */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <div className="relative overflow-hidden rounded-3xl shadow-2xl">
+              <img
+                src="/panaderia.jpg"
+                alt="BAKEHAUS Panadería"
+                className="w-full h-96 lg:h-[500px] object-cover"
+                loading="lazy"
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                  (e.target as HTMLImageElement).src = '/cookies.webp';
+                }}
+              />
+              
+              {/* Overlay sutil */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+              
+              {/* Badge vintage */}
+              <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+                <span className="text-sm font-bold text-zinc-900">
+                  {i18n.language === 'es' ? 'Tradición desde 1965' : 'Tradition since 1965'}
+                </span>
+              </div>
+            </div>
+
+            {/* Decoración */}
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-amber-200/30 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-orange-200/20 rounded-full blur-2xl"></div>
+          </motion.div>
         </div>
       </div>
     </section>
