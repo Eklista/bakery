@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Cookie, Settings, X, Check, Shield, BarChart3, MapPin } from 'lucide-react';
+import { Cookie, Settings, X, Check, Shield, BarChart3 } from 'lucide-react';
 
 interface CookieSettings {
   necessary: boolean;
@@ -63,14 +63,6 @@ export const CookieBanner: React.FC = () => {
       required: false,
       examples: ['Google Analytics', 'Estadísticas de uso', 'Análisis de rendimiento']
     },
-    {
-      key: 'marketing' as keyof CookieSettings,
-      icon: MapPin,
-      title: t('cookies.marketing.title', 'Cookies de Marketing'),
-      description: t('cookies.marketing.desc', 'Utilizadas para mostrar anuncios relevantes'),
-      required: false,
-      examples: ['Facebook Pixel', 'Google Ads', 'Remarketing']
-    }
   ];
 
   const handleAcceptAll = () => {

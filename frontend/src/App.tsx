@@ -8,6 +8,7 @@ import { CookieBanner } from './components/ui/CookieBanner';
 import { SmoothScroll } from './components/SmoothScroll';
 import { LazyLoader } from './components/LazyLoader';
 import { CartProvider } from './contexts/CartContext';
+import { DebugProducts } from './views/DebugProducts';
 
 // Lazy load de las páginas
 const Home = lazy(() => import('./views/Home').then(module => ({ default: module.Home })));
@@ -107,6 +108,14 @@ function App() {
             path="/contacto"
             element={
               <div className="pt-20 p-8 text-center">Contact - Coming Soon</div>
+            }
+          />
+          <Route
+            path="/debug-products"
+            element={
+              <LazyLoader>
+                <DebugProducts />
+              </LazyLoader>
             }
           />
         </Routes>
