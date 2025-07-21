@@ -3,9 +3,11 @@ import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { directusService } from '../../services/directusService';
 import type { DirectusProduct } from '../../services/directusService';
 import { groqTranslator } from '../../services/groqTranslator';
+import { useCart } from '../../contexts/CartContext';
 import { ProductCard } from '../../components/products/ProductCard';
 import type { ProductCardData } from '../../components/products/ProductCard';
 
@@ -66,6 +68,9 @@ const ErrorState = memo(({ error, onRetry, language }: {
 
 export const Products: React.FC = memo(() => {
   const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const { addItem } = useCart();
+  
   const [products, setProducts] = useState<ProductCardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [translating, setTranslating] = useState(false);
@@ -167,7 +172,6 @@ export const Products: React.FC = memo(() => {
     try {
       setLoading(true);
       setError(null);
-
       console.log('📦 Fetching products from Directus API...');
       
       let rawProducts: DirectusProduct[] = [];
@@ -207,19 +211,32 @@ export const Products: React.FC = memo(() => {
     fetchProducts();
   }, [fetchProducts, i18n.language]);
 
-  const handleAddToCart = useCallback((product: ProductCardData) => {
-    console.log('Adding to cart:', product);
-    // Implementar lógica del carrito
-  }, []);
+  const handleAddToCart = useCallback((product: ProductCardData, quantity: number = 1) => {
+    console.log('🛒 Adding to cart from Home:', { id: product.id, title: product.title, quantity });
+    
+    for (let i = 0; i < quantity; i++) {
+      addItem({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.image,
+        category: product.category
+      });
+    }
+    
+    console.log('✅ Added to cart successfully from Home');
+  }, [addItem]);
 
   const handleViewMore = useCallback((product: ProductCardData) => {
-    console.log('View product details:', product);
-    // Navegar a página de detalle del producto
-  }, []);
+    console.log('👁️ View product details:', product.slug);
+    // Navegar a página de productos con el producto específico
+    navigate('/productos');
+  }, [navigate]);
 
   const handleViewAll = useCallback(() => {
-    console.log('Navigate to all products page');
-  }, []);
+    console.log('📦 Navigate to all products page');
+    navigate('/productos');
+  }, [navigate]);
 
   const currentTexts = useMemo(() => 
     headerTexts[i18n.language as 'es' | 'en'] || headerTexts.es, 

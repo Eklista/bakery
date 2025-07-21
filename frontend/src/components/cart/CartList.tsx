@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, Plus, Trash2, ShoppingCart, CreditCard, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import { formatPriceByLanguage } from '../../utils/currency';
 
@@ -132,10 +133,6 @@ export const CartList: React.FC<CartListProps> = memo(({ isMobile = false, onClo
   const { i18n } = useTranslation();
   const { state, clearCart } = useCart();
 
-  const handleCheckout = () => {
-    window.location.href = '/carrito';
-  };
-
   const handleClearCart = () => {
     clearCart();
   };
@@ -240,17 +237,18 @@ export const CartList: React.FC<CartListProps> = memo(({ isMobile = false, onClo
         </div>
 
         {/* Checkout Button */}
-        <motion.button
-          onClick={handleCheckout}
-          className="w-full bg-zinc-900 text-white font-bold py-3 lg:py-4 rounded-xl lg:rounded-2xl hover:bg-amber-600 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg text-sm lg:text-base"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <CreditCard size={16} className="lg:w-[18px] lg:h-[18px]" />
-          <span>
-            {i18n.language === 'es' ? 'Ir a Pagar' : 'Checkout'}
-          </span>
-        </motion.button>
+        <Link to="/checkout" onClick={onClose}>
+          <motion.button
+            className="w-full bg-zinc-900 text-white font-bold py-3 lg:py-4 rounded-xl lg:rounded-2xl hover:bg-amber-600 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg text-sm lg:text-base"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <CreditCard size={16} className="lg:w-[18px] lg:h-[18px]" />
+            <span>
+              {i18n.language === 'es' ? 'Ir a Pagar' : 'Checkout'}
+            </span>
+          </motion.button>
+        </Link>
 
         <p className="text-xs text-neutral-500 text-center mt-3">
           {i18n.language === 'es' 

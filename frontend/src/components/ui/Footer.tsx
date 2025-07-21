@@ -1,8 +1,27 @@
+// src/components/ui/Footer.tsx
 import React from 'react';
 import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Twitter } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
+  const { t, i18n } = useTranslation();
+
+  const navLinks = [
+    { name: t('navbar.home'), href: '/' },
+    { name: t('navbar.products'), href: '/productos' },
+    { name: t('navbar.events'), href: '/eventos' },
+    { name: t('navbar.about'), href: '/nosotros' },
+    { name: t('navbar.contact'), href: '/contacto' }
+  ];
+
+  const socialLinks = [
+    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Facebook, href: "#", label: "Facebook" },
+    { icon: Twitter, href: "#", label: "Twitter" }
+  ];
+
   return (
     <footer className="bg-neutral-900 text-white relative overflow-hidden">
       <div className="max-w-[1600px] mx-auto px-8 lg:px-16 py-20">
@@ -20,15 +39,10 @@ export const Footer: React.FC = () => {
               BAKEHAUS
             </h3>
             <p className="text-neutral-300 text-sm leading-relaxed max-w-xs">
-              Productos horneados artesanalmente con ingredientes premium desde 1995. 
-              Perfección en cada bocado.
+              {t('footer.description')}
             </p>
             <div className="flex space-x-4">
-              {[
-                { icon: Instagram, href: "#", label: "Instagram" },
-                { icon: Facebook, href: "#", label: "Facebook" },
-                { icon: Twitter, href: "#", label: "Twitter" }
-              ].map((social) => {
+              {socialLinks.map((social) => {
                 const IconComponent = social.icon;
                 return (
                   <motion.a
@@ -54,23 +68,18 @@ export const Footer: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <h4 className="text-lg font-bold text-white">Enlaces Rápidos</h4>
+            <h4 className="text-lg font-bold text-white">{t('footer.quickLinks')}</h4>
             <div className="space-y-3">
-              {[
-                { name: 'Inicio', href: '/' },
-                { name: 'Productos', href: '/productos' },
-                { name: 'Eventos', href: '/eventos' },
-                { name: 'Sobre Nosotros', href: '/nosotros' },
-                { name: 'Contacto', href: '/contacto' }
-              ].map((link) => (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  className="block text-neutral-300 hover:text-amber-400 transition-colors duration-300 text-sm font-medium"
-                  whileHover={{ x: 5 }}
-                >
-                  {link.name}
-                </motion.a>
+              {navLinks.map((link) => (
+                <motion.div key={link.name}>
+                  <Link
+                    to={link.href}
+                    className="block text-neutral-300 hover:text-amber-400 transition-colors duration-300 text-sm font-medium"
+                    whileHover={{ x: 5 }}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
               ))}
             </div>
           </motion.div>
@@ -83,12 +92,14 @@ export const Footer: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <h4 className="text-lg font-bold text-white">Contacto</h4>
+            <h4 className="text-lg font-bold text-white">{t('footer.contact')}</h4>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-amber-400 mt-0.5 flex-shrink-0" />
                 <div className="text-neutral-300 text-sm">
-                  <div className="font-medium">Zona 10, Ciudad de Guatemala</div>
+                  <div className="font-medium">
+                    {i18n.language === 'es' ? 'Zona 10, Ciudad de Guatemala' : 'Zone 10, Guatemala City'}
+                  </div>
                   <div>Guatemala, GT</div>
                 </div>
               </div>
@@ -98,7 +109,9 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-amber-400 flex-shrink-0" />
-                <span className="text-neutral-300 text-sm font-medium">hola@bakehaus.gt</span>
+                <span className="text-neutral-300 text-sm font-medium">
+                  {i18n.language === 'es' ? 'hola@bakehaus.gt' : 'hello@bakehaus.gt'}
+                </span>
               </div>
             </div>
           </motion.div>
@@ -111,24 +124,24 @@ export const Footer: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <h4 className="text-lg font-bold text-white">Horarios</h4>
+            <h4 className="text-lg font-bold text-white">{t('footer.hours')}</h4>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <Clock size={18} className="text-amber-400 mt-0.5 flex-shrink-0" />
                 <div className="text-neutral-300 text-sm">
-                  <div>Lun - Vie: 6:00 - 20:00</div>
-                  <div>Sáb: 6:00 - 22:00</div>
-                  <div>Dom: 7:00 - 18:00</div>
+                  <div>{t('footer.schedule.weekdays')}</div>
+                  <div>{t('footer.schedule.saturday')}</div>
+                  <div>{t('footer.schedule.sunday')}</div>
                 </div>
               </div>
             </div>
             
             <div className="space-y-3">
-              <h5 className="text-sm font-semibold text-white">Newsletter</h5>
+              <h5 className="text-sm font-semibold text-white">{t('footer.newsletter')}</h5>
               <div className="flex space-x-2">
                 <input
                   type="email"
-                  placeholder="Tu email"
+                  placeholder={t('footer.emailPlaceholder')}
                   className="flex-1 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-sm text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 />
                 <motion.button
@@ -136,7 +149,7 @@ export const Footer: React.FC = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  OK
+                  {t('footer.subscribe')}
                 </motion.button>
               </div>
             </div>
@@ -152,14 +165,14 @@ export const Footer: React.FC = () => {
           viewport={{ once: true }}
         >
           <p className="text-neutral-400 text-sm">
-            © 2024 Bakehaus. Todos los derechos reservados.
+            © 2024 Bakehaus. {t('footer.allRights')}.
           </p>
           <div className="flex space-x-6">
             <a href="#" className="text-neutral-400 hover:text-amber-400 transition-colors duration-300 text-sm">
-              Política de Privacidad
+              {t('footer.privacy')}
             </a>
             <a href="#" className="text-neutral-400 hover:text-amber-400 transition-colors duration-300 text-sm">
-              Términos de Servicio
+              {t('footer.terms')}
             </a>
           </div>
         </motion.div>

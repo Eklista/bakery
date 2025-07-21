@@ -34,6 +34,30 @@ const resources = {
       'about.requestQuote': 'Solicitar Cotización',
       'about.moreCities': '+3 ciudades más',
       
+      // Events
+      'events.title': 'Eventos Especiales',
+      'events.subtitle': 'Hacemos realidad los momentos más dulces de tu vida',
+      'events.weddings': 'Bodas',
+      'events.corporate': 'Eventos Corporativos',
+      'events.birthdays': 'Cumpleaños',
+      'events.babyShower': 'Baby Shower',
+      'events.requestQuote': 'Solicitar Cotización',
+      'events.planYourEvent': 'Planifica tu Evento',
+      'events.contactUs': 'Contáctanos para crear juntos el evento perfecto',
+      
+      // Contact
+      'contact.title': 'Contáctanos',
+      'contact.subtitle': 'Estamos aquí para hacer realidad tus momentos dulces',
+      'contact.sendMessage': 'Enviar Mensaje',
+      'contact.name': 'Nombre completo',
+      'contact.email': 'Correo electrónico',
+      'contact.phone': 'Teléfono',
+      'contact.subject': 'Asunto',
+      'contact.message': 'Mensaje',
+      'contact.send': 'Enviar',
+      'contact.messageSent': '¡Mensaje enviado!',
+      'contact.thankYou': 'Gracias por contactarnos. Te responderemos pronto.',
+      
       // Footer
       'footer.quickLinks': 'Enlaces Rápidos',
       'footer.contact': 'Contacto',
@@ -57,6 +81,7 @@ const resources = {
       'common.close': 'Cerrar',
       'common.loading': 'Cargando...',
 
+      // Cookies
       'cookies.banner.title': '🍪 Utilizamos cookies',
       'cookies.banner.description': 'Utilizamos cookies para mejorar tu experiencia, analizar el tráfico del sitio y personalizar el contenido. Puedes elegir qué tipos de cookies permitir.',
       'cookies.customize': 'Personalizar',
@@ -110,6 +135,30 @@ const resources = {
       'about.requestQuote': 'Request Quote',
       'about.moreCities': '+3 more cities',
       
+      // Events
+      'events.title': 'Special Events',
+      'events.subtitle': 'We make the sweetest moments of your life come true',
+      'events.weddings': 'Weddings',
+      'events.corporate': 'Corporate Events',
+      'events.birthdays': 'Birthdays',
+      'events.babyShower': 'Baby Shower',
+      'events.requestQuote': 'Request Quote',
+      'events.planYourEvent': 'Plan Your Event',
+      'events.contactUs': 'Contact us to create the perfect event together',
+      
+      // Contact
+      'contact.title': 'Contact Us',
+      'contact.subtitle': 'We are here to make your sweet moments come true',
+      'contact.sendMessage': 'Send Message',
+      'contact.name': 'Full name',
+      'contact.email': 'Email',
+      'contact.phone': 'Phone',
+      'contact.subject': 'Subject',
+      'contact.message': 'Message',
+      'contact.send': 'Send',
+      'contact.messageSent': 'Message sent!',
+      'contact.thankYou': 'Thank you for contacting us. We will get back to you soon.',
+      
       // Footer
       'footer.quickLinks': 'Quick Links',
       'footer.contact': 'Contact',
@@ -133,6 +182,7 @@ const resources = {
       'common.close': 'Close',
       'common.loading': 'Loading...',
 
+      // Cookies
       'cookies.banner.title': '🍪 We use cookies',
       'cookies.banner.description': 'We use cookies to improve your experience, analyze site traffic and personalize content. You can choose which types of cookies to allow.',
       'cookies.customize': 'Customize',

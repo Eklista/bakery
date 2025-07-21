@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useLocation, Link } from 'react-router-dom';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { CartDropdown } from '../cart/CartDropdown';
 import { useCart } from '../../contexts/CartContext';
 
 export const Navbar: React.FC = () => {
@@ -12,6 +13,7 @@ export const Navbar: React.FC = () => {
   const location = useLocation();
   const { state } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const navItems = [
     { name: t('navbar.home'), href: '/', key: 'home' },
@@ -79,35 +81,26 @@ export const Navbar: React.FC = () => {
           >
             <LanguageSwitcher />
             
-            <Link to="/productos">
-              <motion.div
-                className="flex items-center space-x-2 text-neutral-700 hover:text-neutral-900 font-semibold text-sm transition-all duration-300 py-3 px-4 rounded-full hover:bg-neutral-50 relative"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ShoppingBag size={18} />
-                <span>{t('navbar.cart')}</span>
-                <AnimatePresence>
-                  {state.itemCount > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold"
-                    >
-                      {state.itemCount}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </Link>
-            
-            <motion.button 
-              className="bg-zinc-900 text-white font-bold px-6 py-3 rounded-full hover:bg-zinc-100 hover:text-black hover:border-black hover:border-[2px] transition-all duration-300 shadow-lg"
-              whileHover={{ scale: 1.05, y: -1 }}
+            <motion.button
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              className="flex items-center space-x-2 text-neutral-700 hover:text-neutral-900 font-semibold text-sm transition-all duration-300 py-3 px-4 rounded-full hover:bg-neutral-50 relative"
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {t('navbar.order')}
+              <ShoppingBag size={18} />
+              <span>{t('navbar.cart')}</span>
+              <AnimatePresence>
+                {state.itemCount > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold"
+                  >
+                    {state.itemCount}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </motion.button>
           </motion.div>
 
@@ -183,7 +176,7 @@ export const Navbar: React.FC = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.4 }}
               >
-                <Link to="/productos" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/checkout" onClick={() => setIsMenuOpen(false)}>
                   <motion.div
                     className="w-full flex items-center justify-center space-x-2 py-4 px-6 text-neutral-700 hover:text-neutral-900 rounded-2xl hover:bg-neutral-50 transition-all duration-300 font-semibold"
                     whileTap={{ scale: 0.98 }}
@@ -204,19 +197,14 @@ export const Navbar: React.FC = () => {
                     </AnimatePresence>
                   </motion.div>
                 </Link>
-                
-                <motion.button 
-                  className="w-full bg-zinc-900 text-white font-bold py-4 rounded-2xl hover:bg-amber-600 transition-all duration-300 shadow-lg"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {t('navbar.order')}
-                </motion.button>
               </motion.div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Cart Dropdown */}
+      <CartDropdown isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </motion.nav>
   );
 };

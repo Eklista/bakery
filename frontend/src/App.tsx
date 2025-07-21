@@ -6,14 +6,19 @@ import { Layout } from './components/layout/Layout';
 import { LanguageModal } from './components/ui/LanguageModal';
 import { CookieBanner } from './components/ui/CookieBanner';
 import { SmoothScroll } from './components/SmoothScroll';
+import { ScrollToTop } from './components/ScrollToTop';
 import { LazyLoader } from './components/LazyLoader';
 import { CartProvider } from './contexts/CartContext';
+import { ContactProvider } from './contexts/ContactContext';
 import { DebugProducts } from './views/DebugProducts';
 
 // Lazy load de las páginas
 const Home = lazy(() => import('./views/Home').then(module => ({ default: module.Home })));
 const About = lazy(() => import('./views/About').then(module => ({ default: module.About })));
 const Products = lazy(() => import('./views/Products').then(module => ({ default: module.Products })));
+const Events = lazy(() => import('./views/Events').then(module => ({ default: module.Events })));
+const Contact = lazy(() => import('./views/Contact').then(module => ({ default: module.Contact })));
+const Checkout = lazy(() => import('./views/Checkout').then(module => ({ default: module.Checkout })));
 
 function App() {
   const { i18n } = useTranslation();
@@ -63,63 +68,78 @@ function App() {
 
   return (
     <CartProvider>
-      <SmoothScroll />
-      
-      <LanguageModal
-        isOpen={showLanguageModal}
-        onClose={handleCloseModal}
-      />
+      <ContactProvider>
+        <ScrollToTop />
+        <SmoothScroll />
+        
+        <LanguageModal
+          isOpen={showLanguageModal}
+          onClose={handleCloseModal}
+        />
 
-      <CookieBanner />
+        <CookieBanner />
 
-      <Layout>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <LazyLoader>
-                <Home />
-              </LazyLoader>
-            }
-          />
-          <Route
-            path="/nosotros"
-            element={
-              <LazyLoader>
-                <About />
-              </LazyLoader>
-            }
-          />
-          <Route
-            path="/productos"
-            element={
-              <LazyLoader>
-                <Products />
-              </LazyLoader>
-            }
-          />
-          <Route
-            path="/eventos"
-            element={
-              <div className="pt-20 p-8 text-center">Events - Coming Soon</div>
-            }
-          />
-          <Route
-            path="/contacto"
-            element={
-              <div className="pt-20 p-8 text-center">Contact - Coming Soon</div>
-            }
-          />
-          <Route
-            path="/debug-products"
-            element={
-              <LazyLoader>
-                <DebugProducts />
-              </LazyLoader>
-            }
-          />
-        </Routes>
-      </Layout>
+        <Layout>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <LazyLoader>
+                  <Home />
+                </LazyLoader>
+              }
+            />
+            <Route
+              path="/nosotros"
+              element={
+                <LazyLoader>
+                  <About />
+                </LazyLoader>
+              }
+            />
+            <Route
+              path="/productos"
+              element={
+                <LazyLoader>
+                  <Products />
+                </LazyLoader>
+              }
+            />
+            <Route
+              path="/eventos"
+              element={
+                <LazyLoader>
+                  <Events />
+                </LazyLoader>
+              }
+            />
+            <Route
+              path="/contacto"
+              element={
+                <LazyLoader>
+                  <Contact />
+                </LazyLoader>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <LazyLoader>
+                  <Checkout />
+                </LazyLoader>
+              }
+            />
+            <Route
+              path="/debug-products"
+              element={
+                <LazyLoader>
+                  <DebugProducts />
+                </LazyLoader>
+              }
+            />
+          </Routes>
+        </Layout>
+      </ContactProvider>
     </CartProvider>
   );
 }
