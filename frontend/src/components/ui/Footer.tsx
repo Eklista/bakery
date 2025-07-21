@@ -71,11 +71,10 @@ export const Footer: React.FC = () => {
             <h4 className="text-lg font-bold text-white">{t('footer.quickLinks')}</h4>
             <div className="space-y-3">
               {navLinks.map((link) => (
-                <motion.div key={link.name}>
+                <motion.div key={link.name} whileHover={{ x: 5 }}>
                   <Link
                     to={link.href}
                     className="block text-neutral-300 hover:text-amber-400 transition-colors duration-300 text-sm font-medium"
-                    whileHover={{ x: 5 }}
                   >
                     {link.name}
                   </Link>
