@@ -8,7 +8,9 @@ import { directusService } from '../../services/directusService';
 import type { DirectusProduct } from '../../services/directusService';
 import { groqTranslator } from '../../services/groqTranslator';
 import { useCart } from '../../contexts/CartContext';
+import { useProductModal } from '../../hooks/useProductModal';
 import { ProductCard } from '../../components/products/ProductCard';
+import { ProductDetailModal } from '../../components/products/ProductDetailModal';
 import type { ProductCardData } from '../../components/products/ProductCard';
 
 const LoadingSkeleton = memo(() => (
@@ -70,6 +72,7 @@ export const Products: React.FC = memo(() => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const { selectedProduct, isOpen, openModal, closeModal } = useProductModal();
   
   const [products, setProducts] = useState<ProductCardData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -228,10 +231,9 @@ export const Products: React.FC = memo(() => {
   }, [addItem]);
 
   const handleViewMore = useCallback((product: ProductCardData) => {
-    console.log('👁️ View product details:', product.slug);
-    // Navegar a página de productos con el producto específico
-    navigate('/productos');
-  }, [navigate]);
+    console.log('👁️ Opening product details modal:', product.title);
+    openModal(product);
+  }, [openModal]);
 
   const handleViewAll = useCallback(() => {
     console.log('📦 Navigate to all products page');
@@ -325,6 +327,13 @@ export const Products: React.FC = memo(() => {
             </motion.div>
           </>
         )}
+
+        {/* Product Detail Modal */}
+        <ProductDetailModal
+          product={selectedProduct}
+          isOpen={isOpen}
+          onClose={closeModal}
+        />
       </div>
     </section>
   );
