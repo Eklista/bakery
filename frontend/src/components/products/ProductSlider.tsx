@@ -15,8 +15,7 @@ interface ProductSliderProps {
   slidesToShow?: number;
   autoplay?: boolean;
   autoplayInterval?: number;
-  onAddToCart?: (product: ProductCardData) => void;
-  onViewMore?: (product: ProductCardData) => void;
+  onAddToCart?: (product: ProductCardData, quantity: number) => void;
   onViewAll?: () => void;
   className?: string;
 }
@@ -32,7 +31,6 @@ export const ProductSlider: React.FC<ProductSliderProps> = memo(({
   autoplay = false,
   autoplayInterval = 5000,
   onAddToCart,
-  onViewMore,
   onViewAll,
   className = ""
 }) => {
@@ -227,7 +225,6 @@ export const ProductSlider: React.FC<ProductSliderProps> = memo(({
                     variant={variant}
                     showStock={showStock}
                     onAddToCart={onAddToCart}
-                    onViewMore={onViewMore}
                     className="mx-2"
                   />
                 </div>
