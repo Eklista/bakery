@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ShoppingBag, Star, Eye, Minus, Plus, AlertTriangle } from 'lucide-react';
 import { formatPriceByLanguage } from '../../utils/currency';
 import { useCart } from '../../contexts/CartContext';
+import { useProductModal } from '../../contexts/ProductModalContext';
 
 export interface ProductCardData {
   id: number;
@@ -24,7 +25,6 @@ interface ProductCardProps {
   variant?: 'default' | 'featured' | 'compact';
   showStock?: boolean;
   onAddToCart?: (product: ProductCardData, quantity: number) => void;
-  onViewMore?: (product: ProductCardData) => void;
   className?: string;
 }
 
@@ -35,12 +35,12 @@ export const ProductCard: React.FC<ProductCardProps> = memo(({
   variant = 'default',
   showStock = true,
   onAddToCart,
-  onViewMore,
   className = ""
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
   const { state: cartState } = useCart();
+  const { openModal } = useProductModal();
 
   // Calcular stock disponible considerando lo que ya está en el carrito
   const availableStock = useMemo(() => {
@@ -75,9 +75,9 @@ export const ProductCard: React.FC<ProductCardProps> = memo(({
   }, [product, onAddToCart, quantity, canAddToCart, availableStock]);
 
   const handleViewMore = useCallback(() => {
-    console.log('View more:', product.slug);
-    onViewMore?.(product);
-  }, [product, onViewMore]);
+    console.log('Opening modal for product:', product.slug);
+    openModal(product);
+  }, [product, openModal]);
 
   const handleQuantityChange = (delta: number) => {
     const newQuantity = Math.max(1, Math.min(availableStock, quantity + delta));

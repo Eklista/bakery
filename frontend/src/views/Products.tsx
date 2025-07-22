@@ -306,14 +306,10 @@ export const Products: React.FC = memo(() => {
     console.log('✅ Added to cart successfully');
   }, [addItem]);
 
-  const handleViewMore = useCallback((product: ProductCardData) => {
-    console.log('👁️ View product details:', product.slug);
-  }, []);
-
   const handleCategoryChange = useCallback((categoryId: number | null) => {
     console.log('📂 Category changed to:', categoryId);
     setSelectedCategory(categoryId);
-    setSearchTerm(''); // Limpiar búsqueda al cambiar categoría
+    setSearchTerm('');
   }, []);
 
   const handleSearchChange = useCallback((value: string) => {
@@ -390,6 +386,7 @@ export const Products: React.FC = memo(() => {
         <SectionSeparator variant="dots" color="amber" size="md" />
       </React.Suspense>
 
+      {/* Floating Cart Button Mobile */}
       <motion.button
         onClick={() => setShowMobileCart(true)}
         className="fixed bottom-6 right-6 z-40 lg:hidden bg-amber-500 text-white p-3 lg:p-4 rounded-full shadow-2xl flex items-center gap-2"
@@ -410,6 +407,7 @@ export const Products: React.FC = memo(() => {
         <div className="max-w-[1600px] mx-auto px-4 lg:px-8 xl:px-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
             
+            {/* Categories Sidebar */}
             <div className="lg:col-span-3 xl:col-span-2">
               <React.Suspense fallback={
                 <div className="bg-white rounded-2xl p-4 lg:p-6 border border-neutral-200">
@@ -429,8 +427,10 @@ export const Products: React.FC = memo(() => {
               </React.Suspense>
             </div>
 
+            {/* Main Content */}
             <div className="lg:col-span-6 xl:col-span-7">
               <div className="mb-6 lg:mb-8 space-y-4">
+                {/* Search Bar */}
                 <div className="relative">
                   <Search className="absolute left-3 lg:left-4 top-1/2 transform -translate-y-1/2 text-neutral-400" size={18} />
                   <input
@@ -452,6 +452,7 @@ export const Products: React.FC = memo(() => {
                   )}
                 </div>
 
+                {/* Filters and View Controls */}
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-neutral-600">
@@ -492,6 +493,7 @@ export const Products: React.FC = memo(() => {
                 </div>
               </div>
 
+              {/* Products Grid/List */}
               {filteredProducts.length === 0 ? (
                 <div className="text-center py-12 lg:py-16">
                   <div className="w-12 h-12 lg:w-16 lg:h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -536,7 +538,6 @@ export const Products: React.FC = memo(() => {
                         language={i18n.language}
                         variant={viewMode === 'list' ? 'compact' : 'default'}
                         onAddToCart={handleAddToCart}
-                        onViewMore={handleViewMore}
                       />
                     </React.Suspense>
                   ))}
@@ -544,6 +545,7 @@ export const Products: React.FC = memo(() => {
               )}
             </div>
 
+            {/* Cart Sidebar */}
             <div className="hidden lg:block lg:col-span-3">
               <React.Suspense fallback={
                 <div className="bg-neutral-50 rounded-2xl lg:rounded-3xl p-4 lg:p-6 sticky top-24">
