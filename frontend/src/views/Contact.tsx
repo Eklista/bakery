@@ -1,30 +1,13 @@
 // src/views/Contact.tsx
-import React, { memo, useState, useEffect, lazy } from 'react';
+import React, { memo, useEffect, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, User, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useContact } from '../contexts/ContactContext';
+import { useContactForm } from '../hooks/useContactForm';
 
 const SectionSeparator = lazy(() => import('../components/ui/SectionSeparator').then(module => ({ default: module.SectionSeparator })));
 const InteractiveMap = lazy(() => import('../components/InteractiveMap').then(module => ({ default: module.InteractiveMap })));
-
-interface FormData {
-  name: string;
-  email: string;
-  phone: string;
-  subject: string;
-  message: string;
-  eventType: string;
-  eventDate: string;
-}
-
-interface FormErrors {
-  name?: string;
-  email?: string;
-  phone?: string;
-  subject?: string;
-  message?: string;
-}
 
 const ContactInfo = memo(({ 
   icon: Icon, 
@@ -65,20 +48,26 @@ export const Contact: React.FC = memo(() => {
   const { i18n } = useTranslation();
   const { prefillData, clearPrefillData } = useContact();
   
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-    eventType: '',
-    eventDate: ''
+  const {
+    formData,
+    errors,
+    isSubmitting,
+    submitStatus,
+    errorMessage,
+    handleInputChange,
+    handleSubmit,
+    setFormData
+  } = useContactForm({
+    language: i18n.language as 'es' | 'en',
+    onSuccess: () => {
+      console.log('✅ Formulario enviado exitosamente');
+    },
+    onError: (error) => {
+      console.error('❌ Error en formulario:', error);
+    }
   });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  // Efecto para aplicar datos de prellenado
+  // Efecto para aplicar datos de prellenado (mantén esto igual)
   useEffect(() => {
     if (prefillData && Object.keys(prefillData).length > 0) {
       console.log('📝 Applying prefill data:', prefillData);
@@ -90,10 +79,9 @@ export const Contact: React.FC = memo(() => {
         subject: prefillData.subject || prev.subject
       }));
 
-      // Limpiar datos de prellenado después de aplicarlos
       clearPrefillData();
     }
-  }, [prefillData, clearPrefillData]);
+  }, [prefillData, clearPrefillData, setFormData]);
 
   const content = {
     es: {
@@ -252,85 +240,6 @@ export const Contact: React.FC = memo(() => {
 
   const currentContent = content[i18n.language as 'es' | 'en'] || content.es;
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = currentContent.validation.nameRequired;
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = currentContent.validation.emailRequired;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = currentContent.validation.emailInvalid;
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = currentContent.validation.phoneRequired;
-    }
-
-    if (!formData.subject.trim()) {
-      newErrors.subject = currentContent.validation.subjectRequired;
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = currentContent.validation.messageRequired;
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = currentContent.validation.messageMinLength;
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-
-    try {
-      // Aquí se conectará con Directus SMTP
-      console.log('📧 Form data to submit:', formData);
-      
-      // Simular envío por ahora
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setSubmitStatus('success');
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        eventType: '',
-        eventDate: ''
-      });
-      
-      setTimeout(() => setSubmitStatus('idle'), 5000);
-      
-    } catch (error) {
-      console.error('❌ Error sending form:', error);
-      setSubmitStatus('error');
-      setTimeout(() => setSubmitStatus('idle'), 5000);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="pt-20">
       {/* Hero Section */}
@@ -449,13 +358,28 @@ export const Contact: React.FC = memo(() => {
                     <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
                     <div>
                       <p className="font-semibold text-red-800">{currentContent.form.error.title}</p>
-                      <p className="text-sm text-red-600">{currentContent.form.error.message}</p>
+                      <p className="text-sm text-red-600">{errorMessage || currentContent.form.error.message}</p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {submitStatus === 'rate-limited' && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center space-x-3"
+                  >
+                    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-yellow-800">Demasiados intentos</p>
+                      <p className="text-sm text-yellow-600">{errorMessage}</p>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-zinc-900 mb-2">
@@ -601,7 +525,7 @@ export const Contact: React.FC = memo(() => {
                 </div>
 
                 <motion.button
-                  type="submit"
+                  onClick={handleSubmit}
                   disabled={isSubmitting}
                   className="w-full bg-zinc-900 text-white font-bold py-4 rounded-xl hover:bg-amber-500 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   whileHover={!isSubmitting ? { scale: 1.02 } : {}}
@@ -619,7 +543,7 @@ export const Contact: React.FC = memo(() => {
                     </>
                   )}
                 </motion.button>
-              </form>
+              </div>
             </motion.div>
 
             {/* Mapa */}

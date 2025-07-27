@@ -31,6 +31,33 @@ export interface DirectusCategoryWithCount extends DirectusCategory {
   product_count: number;
 }
 
+export interface ContactSubmissionData {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  event_type: string | null;
+  event_date: string | null;
+  status: 'pending' | 'read' | 'replied';
+}
+
+export interface DirectusContactResponse {
+  data: {
+    id: number;
+    status: string;
+    date_created: string;
+    name: string;
+    email: string;
+    phone: string;
+    subject: string;
+    message: string;
+    event_type: string | null;
+    event_date: string | null;
+  };
+}
+
+
 class DirectusService {
   private baseUrl: string;
 
@@ -182,6 +209,77 @@ class DirectusService {
     }
   }
 
+  async submitContactForm(formData: ContactSubmissionData): Promise<DirectusContactResponse> {
+    try {
+      console.log('📧 Submitting contact form to Directus...', formData);
+      
+      const response = await fetch(`${this.baseUrl}/items/contact_submissions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('❌ Directus API Error:', errorData);
+        
+        // Manejar errores específicos de Directus
+        if (errorData.errors && errorData.errors.length > 0) {
+          const error = errorData.errors[0];
+          throw new Error(error.message || 'Error al enviar el formulario');
+        }
+        
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Contact form submitted successfully:', result);
+      
+      return result;
+
+    } catch (error) {
+      console.error('❌ Error submitting contact form:', error);
+      throw error;
+    }
+  }
+
+  // Método para obtener envíos de contacto (útil para admin)
+  async fetchContactSubmissions(limit: number = 50): Promise<ContactSubmissionData[]> {
+    try {
+      console.log('🔄 Fetching contact submissions...');
+      
+      const response = await fetch(
+        `${this.baseUrl}/items/contact_submissions?limit=${limit}&sort=-date_created`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Contact submissions fetched:', data);
+      
+      return data.data;
+
+    } catch (error) {
+      console.error('❌ Error fetching contact submissions:', error);
+      throw error;
+    }
+  }
+
+  // Método para verificar conectividad
+  async healthCheck(): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.baseUrl}/server/info`);
+      return response.ok;
+    } catch (error) {
+      console.error('❌ Directus health check failed:', error);
+      return false;
+    }
+  }
+
   formatPrice(price: string): number {
     return parseFloat(price);
   }
@@ -211,7 +309,10 @@ export const directusService = new DirectusService();
   fetchAll: () => directusService.fetchAllProducts(),
   fetchCategories: () => directusService.fetchCategories(),
   fetchCategoriesWithProducts: () => directusService.fetchCategoriesWithProducts(),
-  fetchProductsByCategory: (id: number) => directusService.fetchProductsByCategory(id)
+  fetchProductsByCategory: (id: number) => directusService.fetchProductsByCategory(id),
+  submitContact: (data: ContactSubmissionData) => directusService.submitContactForm(data),
+  fetchContacts: () => directusService.fetchContactSubmissions(),
+  healthCheck: () => directusService.healthCheck()
 };
 
 console.log('🔌 Directus service ready! Try: directus.fetchCategoriesWithProducts()');
